@@ -27,6 +27,8 @@ class HomePage extends Component {
   render() {
     return (
       <div>
+        <h2>Tranding today:</h2>
+
         {/* import component FilmsList в props которому передаем массив фильмов */}
         <FilmsList films={this.state.films} />
       </div>

@@ -4,28 +4,30 @@ import { Link, withRouter } from 'react-router-dom'; //Link - Для того ч
 
 // import axios from 'axios';
 
+// Styles
+import './FilmsList.scss';
+
 const FilmsList = ({ films, location }) => {
   return (
     <>
-      <h2>Tranding today:</h2>
-
       {/* ul */}
+      <ul className="FilmsList">
+        {films.map(({ id, title }) => (
+          <li key={id}>
+            {/*  Для того чтобы при клике на film перенаправляло на новую страницу с информацией о нем. Создаем  Link с путем, где храним информацию как текущий Route совпал с pathname) и id, и pathname которого передаем ссылку на Movie Details Page*/}
+            <Link
+              to={{
+                pathname: `/movies/${id}`,
 
-      {films.map(({ id, title }) => (
-        <li key={id}>
-          {/*  Для того чтобы при клике на film перенаправляло на новую страницу с информацией о нем. Создаем  Link с путем, где храним информацию как текущий Route совпал с pathname) и id, и pathname которого передаем ссылку на Movie Details Page*/}
-          <Link
-            to={{
-              pathname: `/movies/${id}`,
-
-              // в state можно передавать информацию, откуда ты пришел на эту страницу
-              state: { from: location },
-            }}
-          >
-            {title}
-          </Link>
-        </li>
-      ))}
+                // в state можно передавать информацию, откуда ты пришел на эту страницу
+                state: { from: location },
+              }}
+            >
+              {title}
+            </Link>
+          </li>
+        ))}
+      </ul>
     </>
   );
 };

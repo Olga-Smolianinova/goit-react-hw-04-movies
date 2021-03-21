@@ -1,11 +1,11 @@
 import React, { Component, Suspense, lazy } from 'react';
 
-import { Switch, Route } from 'react-router-dom';
+import { Switch, Route, Redirect } from 'react-router-dom';
 
 import routes from './routes';
 
 // Pages
-import NotFoundPage from './pages/NotFoundPage';
+// import NotFoundPage from './pages/NotFoundPage';
 
 // Components
 import AppBar from './components/AppBar';
@@ -51,7 +51,10 @@ class App extends Component {
 
             <Route path={routes.movieDetails} component={MovieDetailsPage} />
             {/* Not Found Page. Для обработки ошибок, если component not found, передаем какой-либо default Route. Если не передавать path, этот путь будет рендирится везде  и всегда*/}
-            <Route component={NotFoundPage} />
+            {/* <Route component={NotFoundPage} /> */}
+
+            {/* страница по умолчанию, куда перенаправить в случае, если такого адреса не имеется */}
+            <Redirect to="/" />
           </Switch>
         </Suspense>
       </div>
