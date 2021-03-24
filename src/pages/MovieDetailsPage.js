@@ -1,20 +1,27 @@
-import React, { Component } from 'react';
+import React, { Component, Suspense, lazy } from 'react';
 
 import { NavLink, Route, Switch } from 'react-router-dom';
 
-// import axios from 'axios';
+import routes from '../routes';
 
 // Data
 import moviesApi from '../api/movies-api'; //import файла, который прописывает логику настроек Api для http-запросов
+
+import defaultImg from '../images/default.jpg';
+
+//Components. Dynamic import. Chunkование. Lazy
+const Cast = lazy(() =>
+  import('../components/Cast' /* webpackChunkName: "cast-page" */),
+);
+
+const Reviews = lazy(() =>
+  import('../components/Reviews' /* webpackChunkName: "reviews-page" */),
+);
 
 class MovieDetailsPage extends Component {
   state = {
     movie: [],
     genres: [],
-
-    // для блока CAST&REVIEWS
-    cast: [],
-    reviews: [],
   };
 
   // ЖИЗНЕННЫЕ ЦИКЛЫ
@@ -34,34 +41,32 @@ class MovieDetailsPage extends Component {
         genres: [...data.genres],
       });
     });
-
-    //  Cast. Http-запрос об актёрском составе для страницы MovieDetailsPage
-    await moviesApi.fetchCast(movieId).then(results => {
-      // console.log(results.cast);
-
-      this.setState({ cast: [...results.cast] });
-    });
-
-    // Previews. Http-запрос об информация об обзорах для страницы MovieDetailsPage
-    await moviesApi.fetchReviews(movieId).then(({ results }) => {
-      console.log(results);
-
-      this.setState({
-        reviews: [...results],
-      });
-    });
   }
 
   // МЕТОДЫ
-  // обработка пути для img
-  getImgUrl = (size, filePath) =>
-    `https://image.tmdb.org/t/p/w${size}/${filePath}`;
 
   // для обрезки release_date
   getYear = data => String(data).slice(0, 4);
 
   // перевести в % vote_average и отобразить значение в <p> User Score: {vote_average}% </p>
   getPercent = vote => vote * 10;
+
+  //  Клик по Кнопке "Go back"
+  handleButtonGoBack = () => {
+    const { location, history } = this.props;
+
+    // если пользователь напрямую перешел на страницу одной книге, это первая страница - при клике "Вернуться назад" будет ошибка т.к. location.state.from - undefined. В этом случае добавляем проверку
+
+    // новый метод 2020: optional chaining (?.) - оператор state и from, || - если нет, то перекинь на routes.home
+    history.push(location?.state?.from || routes.home);
+
+    // При клике кладем новую запись в location (метод push - добавить новую, replace - заменить старую)  и возвращаемся обратно откуда были перенаправлены на текущую страницу
+    // (oldSchool метод)
+    // if (location.state && location.state.from) {
+    //   return history.push(location.state.from);
+    // }
+    // history.push(routes.home);
+  };
 
   render() {
     const {
@@ -78,28 +83,50 @@ class MovieDetailsPage extends Component {
       <>
         <section>
           {/* Div FilmDetails */}
+
+          {/* Кнопка "Go Back". При клике кладем новую запись в location (метод push - добавить новую, replace - заменить старую)  и возвращаемся обратно на шаг назад */}
+          <button
+            type="button"
+            className="btn btn-primary"
+            onClick={this.handleButtonGoBack}
+          >
+            Go back
+          </button>
+
           <div>
-            {/* Информация о movie. Для указания пути в src применяем getImgUrl из МЕТОДОВ */}
-            <img src={this.getImgUrl(185, poster_path)} alt={original_title} />
+            <div>
+              {/* Информация о movie. Для указания пути в src применяем getImgUrl из МЕТОДОВ */}
+              <img
+                src={
+                  poster_path
+                    ? `https://image.tmdb.org/t/p/w342/${poster_path}`
+                    : defaultImg
+                }
+                alt={original_title}
+                width="300"
+              />
+            </div>
 
-            {/* Title. Для обрезки даты применяем метод getYear, который описан в МЕТОДАХ */}
-            <h2>
-              {original_title} ({this.getYear(release_date)})
-            </h2>
+            <div>
+              {/* Title. Для обрезки даты применяем метод getYear, который описан в МЕТОДАХ */}
+              <h2>
+                {original_title} ({this.getYear(release_date)})
+              </h2>
 
-            {/* User Score. Для вывода данных в % метод getPercent из МЕТОДОВ */}
-            <p>User Score: {this.getPercent(vote_average)}% </p>
+              {/* User Score. Для вывода данных в % метод getPercent из МЕТОДОВ */}
+              <p>User Score: {this.getPercent(vote_average)}% </p>
 
-            <h3>Overview </h3>
-            <p>{overview}</p>
+              <h3>Overview </h3>
+              <p>{overview}</p>
 
-            <h3>Genres</h3>
+              <h3>Genres</h3>
 
-            <ul>
-              {genres.map(({ id, name }) => (
-                <li key={id}>{name}</li>
-              ))}
-            </ul>
+              <ul>
+                {genres.map(({ id, name }) => (
+                  <li key={id}>{name}</li>
+                ))}
+              </ul>
+            </div>
           </div>
 
           {/* div CAST&REVIEWS */}
@@ -110,70 +137,49 @@ class MovieDetailsPage extends Component {
               <li>
                 {/* для создания вложенного маршрута, чтобы информация cast (актерский состав) при
               клике отрисовывалась на той же странице оборачиваем в NavLink */}
-                <NavLink to={`${this.props.match.url}/cast`}>Cast</NavLink>
+                <NavLink
+                  to={{
+                    pathname: `${this.props.match.url}/cast`,
+                    state: { ...this.props.location.state },
+                  }}
+                  className="nav-link"
+                  activeClassName="active"
+                >
+                  Cast
+                </NavLink>
               </li>
               <li>
-                <NavLink to={`${this.props.match.url}/reviews`}>
+                <NavLink
+                  to={{
+                    pathname: `${this.props.match.url}/reviews`,
+                    state: { ...this.props.location.state },
+                  }}
+                  className="nav-link"
+                  activeClassName="active"
+                >
                   Reviews
                 </NavLink>
               </li>
             </ul>
 
             {/* для создания вложенного маршрута, чтобы информация о Cast&Reviews при клике отрисовывалась на той же странице оборачиваем в NavLink. В этом случае  Route создаем на той же странице*/}
-            <Switch>
-              <Route
-                exact
-                path={`${this.props.match.path}/cast`}
-                render={props => {
-                  // console.log(props);
-                  // console.log(this.state.cast);
+            <Suspense fallback={<h2>Loading...</h2>}>
+              <Switch>
+                {/* CAST */}
+                <Route
+                  exact
+                  path={`${this.props.match.path}/cast`}
+                  component={Cast}
+                />
 
-                  const { cast } = this.state;
-
-                  return (
-                    <>
-                      <ul>
-                        {cast.map(({ id, name, character, profile_path }) => (
-                          <li key={id}>
-                            <img
-                              src={this.getImgUrl(92, profile_path)}
-                              alt={name}
-                            />
-                            <p>{name}</p>
-                            <p>Character: {character}</p>
-                          </li>
-                        ))}
-                      </ul>
-                    </>
-                  );
-                }}
-              />
-
-              {/* REVIEWS */}
-              <Route
-                exact
-                path={`${this.props.match.path}/reviews`}
-                render={props => {
-                  // console.log(props);
-                  // console.log(this.state.cast);
-
-                  const { reviews } = this.state;
-
-                  return (
-                    <>
-                      <ul>
-                        {reviews.map(({ id, author, content }) => (
-                          <li key={id}>
-                            <h4> Author: {author}</h4>
-                            <p>{content}</p>
-                          </li>
-                        ))}
-                      </ul>
-                    </>
-                  );
-                }}
-              />
-            </Switch>
+                {/* REVIEWS */}
+                <Route
+                  exact
+                  path={`${this.props.match.path}/reviews`}
+                  component={Reviews}
+                />
+              </Switch>
+            </Suspense>
           </div>
         </section>
       </>
