@@ -30,3 +30,28 @@ h6 {
 p {
   margin: 0;
 }
+
+/* MovieDetailsPage */
+
+.CardWrapper {
+  display: flex;
+  justify-content: center;
+}
+
+.card {
+  width: 50%;
+  margin-left: 20px;
+}
+
+.card-text {
+  margin-bottom: 20px;
+}
+
+/* Error message */
+.ErrorMessage {
+  padding-top: 10px;
+  height: 60px;
+  text-align: center;
+  color: #856404;
+  background-color: #ffeeba;
+}

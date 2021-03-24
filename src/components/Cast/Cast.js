@@ -4,6 +4,8 @@ import PropTypes from 'prop-types';
 
 import moviesApi from '../../api/movies-api'; //import файла, который прописывает логику настроек Api для http-запросов
 
+import './Cast.scss';
+
 import defaultImg from '../../images/default.jpg';
 
 class Cast extends Component {
@@ -34,6 +36,12 @@ class Cast extends Component {
         this.setState({
           casts: [...results.cast],
         });
+
+        // Для плавной прокрутки
+        window.scrollTo({
+          top: document.documentElement.scrollHeight,
+          behavior: 'smooth',
+        });
       })
       .catch(error => this.setState({ error }));
   }
@@ -43,10 +51,9 @@ class Cast extends Component {
 
     return (
       <>
-        {/* <h2>gfddgs</h2> */}
-        <ul>
+        <ul className="CastGallery">
           {casts.map(({ id, name, character, profile_path }) => (
-            <li key={id}>
+            <li key={id} className="CastGalleryItem">
               <img
                 src={
                   profile_path
@@ -54,7 +61,8 @@ class Cast extends Component {
                     : defaultImg
                 }
                 alt={name}
-                width="80"
+                width="92"
+                className="CastGalleryItem-image"
               />
               <p>{name}</p>
               <p>Character: {character}</p>
@@ -63,7 +71,7 @@ class Cast extends Component {
         </ul>
 
         {/* для обработки ошибок (error), рендер по условию. error.message = 'We don`t have any information about cast for this movie' */}
-        {error && <h3>{error.message}</h3>}
+        {error && <h3 className="ErrorMessage">{error.message}</h3>}
       </>
     );
   }

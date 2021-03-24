@@ -97,7 +97,7 @@ class MoviesPage extends Component {
         <FilmsList films={this.state.films} />
 
         {/* для обработки ошибок (error), рендер по условию. error.message = 'No matches were found! Try again!' */}
-        {error && <h3>{error.message}</h3>}
+        {error && <h3 className="ErrorMessage ">{error.message}</h3>}
       </>
     );
   }

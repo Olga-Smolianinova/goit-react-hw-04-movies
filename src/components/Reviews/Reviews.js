@@ -48,7 +48,7 @@ class Reviews extends Component {
         </ul>
 
         {/* для обработки ошибок (error), рендер по условию. error.message = 'We don`t have any reviews for this movie' */}
-        {error && <h3>{error.message}</h3>}
+        {error && <h3 className="ErrorMessage">{error.message}</h3>}
       </>
     );
   }

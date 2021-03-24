@@ -93,8 +93,8 @@ class MovieDetailsPage extends Component {
             Go back
           </button>
 
-          <div>
-            <div>
+          <div className="CardWrapper">
+            <div className="Card-img">
               {/* Информация о movie. Для указания пути в src применяем getImgUrl из МЕТОДОВ */}
               <img
                 src={
@@ -103,23 +103,26 @@ class MovieDetailsPage extends Component {
                     : defaultImg
                 }
                 alt={original_title}
-                width="300"
+                width="342"
               />
             </div>
 
-            <div>
+            <div className="card">
               {/* Title. Для обрезки даты применяем метод getYear, который описан в МЕТОДАХ */}
-              <h2>
+              <h2 className="card-title">
                 {original_title} ({this.getYear(release_date)})
               </h2>
 
               {/* User Score. Для вывода данных в % метод getPercent из МЕТОДОВ */}
-              <p>User Score: {this.getPercent(vote_average)}% </p>
+              <p className="card-text">
+                User Score: {this.getPercent(vote_average)}%{' '}
+              </p>
 
-              <h3>Overview </h3>
-              <p>{overview}</p>
+              <h3 className="card-subtitle mb-2 text-muted">Overview </h3>
 
-              <h3>Genres</h3>
+              <p className="card-text">{overview}</p>
+
+              <h3 className="card-subtitle mb-2 text-muted">Genres</h3>
 
               <ul>
                 {genres.map(({ id, name }) => (
@@ -133,8 +136,9 @@ class MovieDetailsPage extends Component {
           {/* CAST */}
           <div>
             <h3>Additional information</h3>
-            <ul>
-              <li>
+
+            <ul className="list-group">
+              <li className="list-group-item list-group-item-info">
                 {/* для создания вложенного маршрута, чтобы информация cast (актерский состав) при
               клике отрисовывалась на той же странице оборачиваем в NavLink */}
                 <NavLink
@@ -148,7 +152,7 @@ class MovieDetailsPage extends Component {
                   Cast
                 </NavLink>
               </li>
-              <li>
+              <li className="list-group-item list-group-item-info">
                 <NavLink
                   to={{
                     pathname: `${this.props.match.url}/reviews`,
