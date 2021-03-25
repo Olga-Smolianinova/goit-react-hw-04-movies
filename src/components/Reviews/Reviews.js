@@ -11,12 +11,12 @@ class Reviews extends Component {
   };
 
   // ЖИЗНЕННЫЕ ЦИКЛЫ
-  async componentDidMount() {
+  componentDidMount() {
     // выносим в отдельную переменную movieId - значение this.props.match.params.movieId
     const movieId = this.props.match.params.movieId;
 
     // Previews. Http-запрос об информация об обзорах для страницы MovieDetailsPage
-    await moviesApi
+    moviesApi
       .fetchReviews(movieId)
       .then(({ results }) => {
         // console.log(results);

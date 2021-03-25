@@ -15,12 +15,12 @@ class Cast extends Component {
   };
 
   // ЖИЗНЕННЫЕ ЦИКЛЫ
-  async componentDidMount() {
+  componentDidMount() {
     // выносим в отдельную переменную movieId - значение this.props.match.params.movieId
     const movieId = this.props.match.params.movieId;
 
     //  Cast. Http-запрос об актёрском составе для страницы MovieDetailsPage
-    await moviesApi
+    moviesApi
       .fetchCast(movieId)
       .then(results => {
         // console.log(results);

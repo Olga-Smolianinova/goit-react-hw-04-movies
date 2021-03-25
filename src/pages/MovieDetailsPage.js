@@ -22,25 +22,29 @@ class MovieDetailsPage extends Component {
   state = {
     movie: [],
     genres: [],
+    error: null,
   };
 
   // ЖИЗНЕННЫЕ ЦИКЛЫ
   // для отрисовки страницы с информацией только об одной книге делаем http-запрос
 
-  async componentDidMount() {
+  componentDidMount() {
     // выносим в отдельную переменную movieId - значение this.props.match.params.movieId
     const movieId = this.props.match.params.movieId;
 
     // MovieDetailsPage http-запрос полной информации о фильме для страницы кинофильма по его id.
-    await moviesApi.fetchMovieDetails(movieId).then(data => {
-      // console.log(data);
-      // console.log(data.genres);
+    moviesApi
+      .fetchMovieDetails(movieId)
+      .then(data => {
+        // console.log(data);
+        // console.log(data.genres);
 
-      this.setState({
-        movie: data,
-        genres: [...data.genres],
-      });
-    });
+        this.setState({
+          movie: data,
+          genres: [...data.genres],
+        });
+      })
+      .catch(error => this.setState({ error }));
   }
 
   // МЕТОДЫ
@@ -77,7 +81,7 @@ class MovieDetailsPage extends Component {
       overview,
     } = this.state.movie;
 
-    const { genres } = this.state;
+    const { genres, error } = this.state;
 
     return (
       <>
@@ -185,6 +189,9 @@ class MovieDetailsPage extends Component {
               </Switch>
             </Suspense>
           </div>
+
+          {/* для обработки ошибок (error), рендер по условию. */}
+          {error && <h3 className="ErrorMessage">{error.message}</h3>}
         </section>
       </>
     );
